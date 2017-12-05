@@ -9,7 +9,6 @@
 #include <SFML\Graphics\Drawable.hpp>
 #include <list>
 #include <vector>
-#include <functional>
 
 // The object class needs the CollisionManager class to be created so we declare that 
 // because object also needs CollisionManager
@@ -42,8 +41,8 @@ public:
 	// ThisObject is used to check if we're not comparing the same object
 	Collided getCollision(const sf::Vector2f &begin, const sf::Vector2f &end, const Object* thisObject) const;
 
-	// Internal function, get all vertices in the given rectangle
+	// Get all objects in the given rectangle
 	std::vector<Object* > getSurroundingObjects(const sf::Vector2f &left, const sf::Vector2f &right, const Object* thisObject) const;
-	// Internal function, get all vertices in the given circle
+	// Get all objects in the given circle
 	std::vector<Object* > getSurroundingObjects(const sf::Vector2f &center, const float radius, const Object * thisObject) const;
 };

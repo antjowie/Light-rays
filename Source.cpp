@@ -1,4 +1,5 @@
 #include "Polygon.h"
+#include "LightCircle.h"
 #include "CollisionManager.h"
 
 #include <SFML\Graphics\RenderWindow.hpp>
@@ -15,11 +16,11 @@ int main()
 	CollisionManager collisionManager;
 
 	sf::Texture temp;
-	Polygon obj(sf::PrimitiveType::Lines,temp);
 	
+	// For some reason quads doesn't support conclave shapes, quite a bummer, because I wanted to test it
 	{
 		// Init some simple shapes
-		Polygon *shape1 = new Polygon(sf::PrimitiveType::Quads,temp);
+		Polygon *shape1 = new Polygon(sf::PrimitiveType::Quads, temp);
 		shape1->addVertex(sf::Vector2f(0, 0));
 		shape1->addVertex(sf::Vector2f(200, -48));
 		shape1->addVertex(sf::Vector2f(146, 115));
@@ -52,9 +53,7 @@ int main()
 		collisionManager.push(shape4);
 	}
 
-	Polygon *mouse = new Polygon(sf::PrimitiveType::Lines, temp);
-	mouse->addVertex(sf::Vector2f(400,400));
-	mouse->addVertex(sf::Vector2f(0,0));
+	LightCircle *mouse = new LightCircle(400,400);
 	collisionManager.push(mouse);
 
 	window.setFramerateLimit(60);
@@ -75,25 +74,11 @@ int main()
 				break;
 			
 			case sf::Event::MouseMoved:
-				mouse->getLastVertex()->position.x = event.mouseMove.x;
-				mouse->getLastVertex()->position.y = event.mouseMove.y;
+				mouse->setPosition(event.mouseMove.x, event.mouseMove.y);
 				break;
 			}
 	
 		window.clear(sf::Color(180,180,180));
-		
-		Collided temp = collisionManager.getCollision(mouse->getVertices()[0].position,mouse->getVertices()[1].position,mouse);
-		if (temp.m_percentage != 1.f)
-		{
-			std::cout << temp.m_percentage << '\n';
-			sf::CircleShape t;
-			t.setFillColor(sf::Color::Yellow);
-			t.setRadius(25);
-			t.setOrigin(25, 25);
-			t.setPosition(temp.m_point);
-			window.draw(t);
-			temp.m_collided->hit();
-		}
 
 		collisionManager.update(0.f);
 

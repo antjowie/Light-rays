@@ -12,11 +12,14 @@ private:
 	float m_radius;
 	const int m_rays;
 
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
+
 public:
 	// The ammount of rays the object has to display, the higher the more accurate round the object will appear
-	LightCircle(const int rays = 100, const float radius = 0);
+	LightCircle(const float radius = 0, const int rays = 100);
 	
-	//virtual void update(const float elapsedTime, const CollisionManager &collisionManager) override final;
+	virtual void hit() override final;
+	virtual void update(const float elapsedTime, const CollisionManager &collisionManager) override final;
 	
 	void setRadius(const float radius);
 };

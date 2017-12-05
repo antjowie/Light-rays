@@ -3,8 +3,6 @@
 
 #include <SFML\Graphics\RenderTarget.hpp>
 
-#include <iostream>
-
 void CollisionManager::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	for (const auto& iter : m_objects)
@@ -100,7 +98,6 @@ std::vector<Object*> CollisionManager::getSurroundingObjects(const sf::Vector2f 
 			if (vertex.x > std::min(left.x, right.x) && vertex.x < std::max(left.x, right.x) &&
 				vertex.y > std::min(left.y, right.y) && vertex.y < std::max(left.y, right.y))
 			{
-				std::cout << &object << '\n';
 				returner.push_back(object);
 				break;
 			}
@@ -116,10 +113,9 @@ std::vector<Object* > CollisionManager::getSurroundingObjects(const sf::Vector2f
 	{
 		if (object == thisObject) continue;
 		for (const auto &iter: object->getVertices())
-			if (iter.position.x + object->getPosition().x - center.x <= radius && iter.position.y + object->getPosition().y - center.y <= radius)
+			if (std::pow(iter.position.x + object->getPosition().x - center.x,2) + std::pow(iter.position.y + object->getPosition().y - center.y,2) < std::pow(radius,2))
 			{
 				returner.push_back(object);
-				std::cout << &object << '\n';
 				break;
 			}
 	}

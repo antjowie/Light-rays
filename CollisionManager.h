@@ -16,9 +16,9 @@ class Object;
 
 struct Collided
 {
-	float m_percentage{ 1 };		// The percentage of the vector until collision, will be inbetween 0-1 with 1 meaning no collision
-	Object * m_collided{ nullptr };	// A pointer to the object which had been collided with. If no collision happened, this will be a nullptr
-	sf::Vector2f m_point{ 0,0 };	// Collision point
+	float percentage{ 1 };		// The percentage of the vector until collision, will be inbetween 0-1 with 1 meaning no collision
+	Object * collided{ nullptr };	// A pointer to the object which had been collided with. If no collision happened, this will be a nullptr
+	sf::Vector2f point{ 0,0 };	// Collision point
 };
 
 class CollisionManager : public sf::Drawable
@@ -39,6 +39,7 @@ public:
 
 	// Check for collision on the given line, startpoint a to point b.
 	// ThisObject is used to check if we're not comparing the same object
+	// End should be a movement vector, not a point
 	Collided getCollision(const sf::Vector2f &begin, const sf::Vector2f &end, const Object* thisObject) const;
 
 	// Get all objects in the given rectangle

@@ -7,7 +7,6 @@
 
 #include <SFML\Graphics\Texture.hpp>
 #include <SFML\Graphics\CircleShape.hpp>
-#include <iostream>
 
 int main()
 {
@@ -26,7 +25,6 @@ int main()
 		shape1->addVertex(sf::Vector2f(146, 115));
 		shape1->addVertex(sf::Vector2f(70, 175));
 		shape1->setPosition(120, 162);
-		collisionManager.push(shape1);
 
 		Polygon *shape2 = new Polygon(sf::PrimitiveType::Quads, temp);
 		shape2->addVertex(sf::Vector2f(0, 0));
@@ -34,7 +32,6 @@ int main()
 		shape2->addVertex(sf::Vector2f(155, 255));
 		shape2->addVertex(sf::Vector2f(10, 80));
 		shape2->setPosition(520, 150);
-		collisionManager.push(shape2);
 
 		Polygon *shape3 = new Polygon(sf::PrimitiveType::Quads, temp);
 		shape3->addVertex(sf::Vector2f(0, 0));
@@ -42,7 +39,6 @@ int main()
 		shape3->addVertex(sf::Vector2f(215, 210));
 		shape3->addVertex(sf::Vector2f(-15, 170));
 		shape3->setPosition(150,520);
-		collisionManager.push(shape3);
 
 		Polygon *shape4 = new Polygon(sf::PrimitiveType::Quads, temp);
 		shape4->addVertex(sf::Vector2f(0, 0));
@@ -50,14 +46,18 @@ int main()
 		shape4->addVertex(sf::Vector2f(150, 80));
 		shape4->addVertex(sf::Vector2f(15, 180));
 		shape4->setPosition(490, 540);
-		collisionManager.push(shape4);
+
+		collisionManager.push(shape1);
+		//collisionManager.push(shape2);
+		//collisionManager.push(shape3);
+		//collisionManager.push(shape4);
 	}
 
 	LightCircle *mouse = new LightCircle(400,400);
 	collisionManager.push(mouse);
 
+	window.create(sf::VideoMode(800, 800), "Light rays test", sf::Style::Default);
 	window.setFramerateLimit(60);
-	window.create(sf::VideoMode(800, 800), "Light rays test", sf::Style::Close);
 
 	while (window.isOpen())
 	{

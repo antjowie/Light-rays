@@ -2,6 +2,8 @@
 #include "Object.h"
 
 #include <SFML\Graphics\RenderTarget.hpp>
+#include <iostream>
+
 
 void CollisionManager::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
@@ -40,14 +42,14 @@ Collided CollisionManager::getCollision(const sf::Vector2f & begin, const sf::Ve
 	Collided collided;
 	const sf::Vector2f movement{ end - begin };
 
-	for (auto &iter : m_objects)
+	for (auto &object : m_objects)
 	{
-		if (iter == thisObject) continue;
-		const std::vector<sf::Vertex> &vertices{ iter->getVertices() };
+		if (object == thisObject) continue;
+		const std::vector<sf::Vertex> &vertices{ object->getVertices() };
 		for (size_t i = 0; i < vertices.size(); ++i)
 		{
-			const sf::Vector2f begin2{ vertices[i].position + iter->getPosition()}; // Line begin
-			const sf::Vector2f movement2{ (vertices[(i + 1) % vertices.size()].position) + iter->getPosition() - begin2}; // Movement of the line
+			const sf::Vector2f begin2{ vertices[i].position + object->getPosition()}; // Line begin
+			const sf::Vector2f movement2{ (vertices[(i + 1) % vertices.size()].position) - vertices[i].position }; // Movement of the line
 
 			// Calculating collision
 			// A: object starting point
@@ -70,15 +72,20 @@ Collided CollisionManager::getCollision(const sf::Vector2f & begin, const sf::Ve
 			//
 			// If T1 is larger then 0, collision could happened
 			// If T2 is inbetween 0-1, collision happened (because the object ray coulnd't reach it's end)
-
+			
+			
 			const float t2{ (movement.x*(begin2.y - begin.y) + movement.y*(begin.x - begin2.x)) / (movement2.x*movement.y - movement2.y*movement.x) };
 			const float t1{ (begin2.x + movement2.x*t2 - begin.x) / movement.x };
+			
 
-			if (t1 > 0 && t2 > 0 && t2 < 1.f && t1 < collided.m_percentage)
+			
+			//std::cout << t1 << '\n' << t2 << "\n\n";
+
+			if (t1 > 0 && t2 > 0 && t2 < 1.f && t1 < collided.percentage)
 			{
-				collided.m_percentage = t1;
-				collided.m_collided = iter;
-				collided.m_point = sf::Vector2f(begin.x + movement.x * t1, begin.y + movement.y * t1);
+				collided.percentage = t1;
+				collided.collided = object;
+				collided.point = sf::Vector2f(begin.x + movement.x * t1, begin.y + movement.y * t1);
 			}
 		}
 	}
@@ -113,7 +120,7 @@ std::vector<Object* > CollisionManager::getSurroundingObjects(const sf::Vector2f
 	{
 		if (object == thisObject) continue;
 		for (const auto &iter: object->getVertices())
-			if (std::pow(iter.position.x + object->getPosition().x - center.x,2) + std::pow(iter.position.y + object->getPosition().y - center.y,2) < std::pow(radius,2))
+			if (std::powf(iter.position.x + object->getPosition().x - center.x,2) + std::powf(iter.position.y + object->getPosition().y - center.y,2) < std::powf(radius,2))
 			{
 				returner.push_back(object);
 				break;

@@ -44,7 +44,21 @@ void LightCircle::update(const float elapsedTime, const CollisionManager & colli
 			m_vertices.append(sf::Vertex(getOrigin(), sf::Color::Red));
 			sf::Vertex temp(vertex);
 			temp.color = sf::Color::Red;
-			temp.position += object->getPosition() - getPosition() + m_vertices[0].position;
+
+			// Map local vector position to other local object coordinates
+			temp.position += object->getPosition() - getPosition() +m_vertices[0].position;
+			
+			// Make it into a unit vector and convert to max range
+			sf::Vector2f movement(temp.position - m_vertices[0].position);
+			const float magnitude{ sqrtf(std::powf(movement.x, 2) + std::powf(movement.y, 2)) };
+			movement = movement / magnitude * m_radius;
+			temp.position = movement + m_vertices[0].position;
+			
+			// Fix position with collisions
+			Collided collided = collisionManager.getCollision(getPosition(), temp.position + getPosition() - m_vertices[0].position, this);
+			movement *= collided.percentage;
+			temp.position = movement + m_vertices[0].position;
+
 			m_vertices.append(temp);
 		}
 	}

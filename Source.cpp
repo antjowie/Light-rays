@@ -48,9 +48,9 @@ int main()
 		shape4->setPosition(490, 540);
 
 		collisionManager.push(shape1);
-		//collisionManager.push(shape2);
-		//collisionManager.push(shape3);
-		//collisionManager.push(shape4);
+		collisionManager.push(shape2);
+		collisionManager.push(shape3);
+		collisionManager.push(shape4);
 	}
 
 	LightCircle *mouse = new LightCircle(400,400);

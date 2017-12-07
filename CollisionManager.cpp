@@ -48,9 +48,10 @@ Collided CollisionManager::getCollision(const sf::Vector2f & begin, const sf::Ve
 		const std::vector<sf::Vertex> &vertices{ object->getVertices() };
 		for (size_t i = 0; i < vertices.size(); ++i)
 		{
-			const sf::Vector2f begin2{ vertices[i].position + object->getPosition()}; // Line begin
-			const sf::Vector2f movement2{ (vertices[(i + 1) % vertices.size()].position) - vertices[i].position }; // Movement of the line
-
+			const sf::Vector2f begin2{ object->localToWorld(vertices[i].position)}; // Line begin
+			const sf::Vector2f end2{ object->localToWorld(vertices[(i + 1) % vertices.size()].position)}; // Movement of the line
+			const sf::Vector2f movement2{ end2 - begin2 };
+			
 			// Calculating collision
 			// A: object starting point
 			// B: object vector 
@@ -73,16 +74,18 @@ Collided CollisionManager::getCollision(const sf::Vector2f & begin, const sf::Ve
 			// If T1 is larger then 0, collision could happened
 			// If T2 is inbetween 0-1, collision happened (because the object ray coulnd't reach it's end)
 			
+			const double t2{ (movement.x*(begin2.y - begin.y) + movement.y*(begin.x - begin2.x)) / (movement2.x*movement.y - movement2.y*movement.x) };
+			const double t1{ (begin2.x + movement2.x*t2 - begin.x) / movement.x };
 			
-			const float t2{ (movement.x*(begin2.y - begin.y) + movement.y*(begin.x - begin2.x)) / (movement2.x*movement.y - movement2.y*movement.x) };
-			const float t1{ (begin2.x + movement2.x*t2 - begin.x) / movement.x };
-			
-
-			
-			//std::cout << t1 << '\n' << t2 << "\n\n";
-
-			if (t1 > 0 && t2 > 0 && t2 < 1.f && t1 < collided.percentage)
+			// The offset is used because t2 has some precision issues. SFML does not provide a vector<double> class 
+			// Although I could make my own, this is easier to do.
+			if ((t1 > 0.f && t2 > 0.f && t2 <= 1.f + 1.e-5f && t1 < collided.percentage) || t1 != t1)
 			{
+				// This happens when a the ray and object ray have one component in common. It only happens on the opposite side of the block.
+				// Because SFML doesn't appear to support concave shapes. 
+				if (t1 != t1 && collided.percentage == 1)
+					collided.percentage = 0;
+
 				collided.percentage = t1;
 				collided.collided = object;
 				collided.point = sf::Vector2f(begin.x + movement.x * t1, begin.y + movement.y * t1);

@@ -39,7 +39,7 @@ public:
 
 	// Check for collision on the given line, startpoint a to point b.
 	// ThisObject is used to check if we're not comparing the same object
-	// End should be a movement vector, not a point
+	// Use global coordinates
 	Collided getCollision(const sf::Vector2f &begin, const sf::Vector2f &end, const Object* thisObject) const;
 
 	// Get all objects in the given rectangle

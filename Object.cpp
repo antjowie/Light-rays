@@ -26,3 +26,13 @@ const std::vector<sf::Vertex> Object::getVertices() const
 		temp.push_back(m_vertices[i]);
 	return temp;
 }
+
+sf::Vector2f Object::localToWorld(const sf::Vector2f & point) const
+{
+	return point - getOrigin() + getPosition();
+}
+
+sf::Vector2f Object::worldToLocal(const sf::Vector2f & point) const
+{
+	return point - getPosition() + getOrigin();
+}

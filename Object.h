@@ -38,4 +38,7 @@ public:
 	const int getCollisionFilter() const;
 	// Used for collision checking, more precise than AABB boxes
 	const std::vector<sf::Vertex> getVertices() const;
+
+	sf::Vector2f localToWorld(const sf::Vector2f &point) const;
+	sf::Vector2f worldToLocal(const sf::Vector2f &point) const;
 };

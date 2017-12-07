@@ -74,18 +74,16 @@ Collided CollisionManager::getCollision(const sf::Vector2f & begin, const sf::Ve
 			// If T1 is larger then 0, collision could happened
 			// If T2 is inbetween 0-1, collision happened (because the object ray coulnd't reach it's end)
 			
-			const double t2{ (movement.x*(begin2.y - begin.y) + movement.y*(begin.x - begin2.x)) / (movement2.x*movement.y - movement2.y*movement.x) };
-			const double t1{ (begin2.x + movement2.x*t2 - begin.x) / movement.x };
-			
-			// The offset is used because t2 has some precision issues. SFML does not provide a vector<double> class 
-			// Although I could make my own, this is easier to do.
-			if ((t1 > 0.f && t2 > 0.f && t2 <= 1.f + 1.e-5f && t1 < collided.percentage) || t1 != t1)
-			{
-				// This happens when a the ray and object ray have one component in common. It only happens on the opposite side of the block.
-				// Because SFML doesn't appear to support concave shapes. 
-				if (t1 != t1 && collided.percentage == 1)
-					collided.percentage = 0;
+			const float t2{ (movement.x*(begin2.y - begin.y) + movement.y*(begin.x - begin2.x)) / (movement2.x*movement.y - movement2.y*movement.x) };
+			float t1{ (begin2.x + movement2.x*t2 - begin.x) / movement.x };
+			// If the x component doesn't change, the equation will divide by zero, so we use the second equation
+			if (t1 != t1)
+				t1 = (begin2.y + movement2.y*t2 - begin.y) / movement.y;
 
+			// The float data type has some precision issues
+			// This offset is used to work around that, else I have to make my own vector classes which is a lot more work
+			if ((t1 > 0.f && t2 > 0.f && t2 <= 1.f + 1.e-5f && t1 < collided.percentage))
+			{
 				collided.percentage = t1;
 				collided.collided = object;
 				collided.point = sf::Vector2f(begin.x + movement.x * t1, begin.y + movement.y * t1);

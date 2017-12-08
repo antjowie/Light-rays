@@ -9,6 +9,9 @@
 class LightCircle : public Object
 {
 private:
+	// Takes a movement vector (magnitude), not a point of coordinate
+	void rotateVector(sf::Vector2f &vector, const float degrees) const;
+
 	float m_radius;
 	const int m_rays;
 

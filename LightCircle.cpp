@@ -9,6 +9,17 @@
 
 static sf::Texture tex;
 
+void LightCircle::rotateVector(sf::Vector2f & vector, const float degrees) const
+{
+	float radians{ degrees / 180.f * 3.14159265359f };
+
+	const float x{ vector.x * std::cos(radians) - vector.y * std::sin(radians) };
+	const float y{ vector.x * std::sin(radians) + vector.y * std::cos(radians) };
+
+	vector.x = x;
+	vector.y = y;
+}
+
 void LightCircle::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	states.transform = getTransform();
@@ -55,23 +66,25 @@ void LightCircle::update(const float elapsedTime, const CollisionManager & colli
 	m_vertices.clear();
 	for (const auto &object: collisionManager.getSurroundingObjects(getPosition(), m_radius, this))
 		for (const auto &vertex : object->getVertices())
-		{
-			m_vertices.append(sf::Vertex(getOrigin(), sf::Color::Red));
+			// This rotates each vector a bit so that we can get behind the block edges
+			for(float i = -0.1f; i <= 0.1f; i += 0.1f)
+			{
+				m_vertices.append(sf::Vertex(getOrigin(), sf::Color::Red));
 
-			sf::Vertex temp(vertex);
-			temp.color = sf::Color::Red;
+				sf::Vertex temp(vertex);
+				temp.color = sf::Color::Red;
+				temp.position = worldToLocal(object->localToWorld(temp.position));
+				
+				// Turn into a unit vector and give radius as length
+				sf::Vector2f movement{ temp.position - getOrigin() };
+				movement = movement / std::sqrtf(movement.x * movement.x + movement.y * movement.y) * m_radius;
+				rotateVector(movement, i);
 
-			temp.position = worldToLocal(object->localToWorld(temp.position));
+				Collided collided = collisionManager.getCollision(getPosition(), localToWorld(getOrigin() + movement), this);
+				temp.position = worldToLocal(movement * collided.percentage + getPosition());
 
-			// Turn into a unit vector and give radius as length
-			sf::Vector2f movement{ temp.position - getOrigin() };
-			movement = movement / std::sqrtf(movement.x * movement.x + movement.y * movement.y) * m_radius;
-			
-			Collided collided = collisionManager.getCollision(getPosition(), localToWorld(getOrigin() + movement), this);
-			temp.position = worldToLocal(movement * collided.percentage + getPosition());
-		
-			m_vertices.append(temp);
-		}
+				m_vertices.append(temp);
+			}
 }
 
 void LightCircle::setRadius(const float radius)

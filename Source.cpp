@@ -48,12 +48,12 @@ int main()
 		shape4->setPosition(490, 540);
 
 		collisionManager.push(shape1);
-		collisionManager.push(shape2);
-		collisionManager.push(shape3);
-		collisionManager.push(shape4);
+		//collisionManager.push(shape2);
+		//collisionManager.push(shape3);
+		//collisionManager.push(shape4);
 	}
 
-	LightCircle *mouse = new LightCircle(400,400);
+	LightCircle *mouse = new LightCircle(400,30);
 	collisionManager.push(mouse);
 
 	window.create(sf::VideoMode(800, 800), "Light rays test", sf::Style::Default);
@@ -78,6 +78,9 @@ int main()
 				break;
 			}
 	
+
+		mouse->setPosition(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+
 		window.clear(sf::Color(180,180,180));
 
 		collisionManager.update(0.f);

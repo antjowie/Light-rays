@@ -6,19 +6,21 @@
 #pragma once
 #include "Object.h"
 
+#include <SFML\Graphics\CircleShape.hpp>
+
 class LightCircle : public Object
 {
 private:
+	// This circle is used to calculate the points for all the triangles. 
+	sf::CircleShape m_circle;
+
 	// Takes a movement vector (magnitude), not a point of coordinate
 	void rotateVector(sf::Vector2f &vector, const float degrees) const;
-
-	float m_radius;
-	const int m_rays;
-
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
 
 public:
-	// The ammount of rays the object has to display, the higher the more accurate round the object will appear
+	// The ammount of rays the object has to display, the higher the more round the object will appear
+	// The ray value does not effect accuracy whatsoever because rays are calculated depending on surrouding objects
 	LightCircle(const float radius = 0, const int rays = 100);
 	
 	virtual void hit() override final;

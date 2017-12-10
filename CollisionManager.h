@@ -17,7 +17,7 @@ class Object;
 struct Collided
 {
 	float percentage{ 1 };		// The percentage of the vector until collision, will be inbetween 0-1 with 1 meaning no collision
-	Object * collided{ nullptr };	// A pointer to the object which had been collided with. If no collision happened, this will be a nullptr
+	Object * object{ nullptr };	// A pointer to the object which had been collided with. If no collision happened, this will be a nullptr
 	sf::Vector2f point{ 0,0 };	// Collision point
 };
 

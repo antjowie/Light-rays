@@ -85,7 +85,7 @@ Collided CollisionManager::getCollision(const sf::Vector2f & begin, const sf::Ve
 			if ((t1 > 0.f && t2 > 0.f && t2 <= 1.f + 1.e-5f && t1 < collided.percentage))
 			{
 				collided.percentage = t1;
-				collided.collided = object;
+				collided.object = object;
 				collided.point = sf::Vector2f(begin.x + movement.x * t1, begin.y + movement.y * t1);
 			}
 		}

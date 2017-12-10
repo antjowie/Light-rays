@@ -90,31 +90,54 @@ void LightCircle::update(const float elapsedTime, const CollisionManager & colli
 		{
 			previousObject = collided.object;
 			std::list<sf::Vertex> vertices;
+			
+			// Load all vertices with corrected magnitude
 			for (const auto &vertex : collided.object->getVertices())
-				{
-					// This rotates each vector a bit so that we can get behind the block edges
-					sf::Vertex temp(vertex);
-					temp.color = sf::Color::Red;
-					temp.position = worldToLocal(collided.object->localToWorld(temp.position));
+			{
+				// This rotates each vector a bit so that we can get behind the block edges
+				sf::Vertex temp(vertex);
+				temp.color = sf::Color::Red;
+				temp.position = worldToLocal(collided.object->localToWorld(temp.position));
 
-					// Turn into a unit vector and give radius as length
-					sf::Vector2f movement{ temp.position - getOrigin() };
-					movement = movement / std::sqrtf(movement.x * movement.x + movement.y * movement.y) * m_circle.getRadius();
+				// Turn into a unit vector and give radius as length
+				sf::Vector2f movement{ temp.position - getOrigin() };
+				movement = movement / std::sqrtf(movement.x * movement.x + movement.y * movement.y) * m_circle.getRadius();
 
-					rotateVector(movement, -0.1f);
-					vertices.push_back(sf::Vertex(worldToLocal(movement * collisionManager.getCollision(getPosition(), localToWorld(getOrigin() + movement), this).percentage + getPosition()),sf::Color::Red));
-					rotateVector(movement, 0.2f);
-					vertices.push_back(sf::Vertex(worldToLocal(movement * collisionManager.getCollision(getPosition(), localToWorld(getOrigin() + movement), this).percentage + getPosition()), sf::Color::Red));
-				}
+				rotateVector(movement, -0.1f);
+				vertices.push_back(sf::Vertex(worldToLocal(movement * collisionManager.getCollision(getPosition(), localToWorld(getOrigin() + movement), this).percentage + getPosition()),sf::Color::Red));
+				rotateVector(movement, 0.2f);
+				vertices.push_back(sf::Vertex(worldToLocal(movement * collisionManager.getCollision(getPosition(), localToWorld(getOrigin() + movement), this).percentage + getPosition()), sf::Color::Red));
+			}
+			
+			// Push all vertices is correct order for SFML to render
 			while (!vertices.empty())
 			{
+				// Check wether or not we loop around the circle
+				bool leftPos{ false };
+				bool rightPos{ false };
+				bool looped{ false };
+				for (const auto &it : vertices)
+				{
+					const sf::Vector2f movement{ it.position - getOrigin() };
+					if (movement.y < 0 && movement.x > 0)
+						rightPos = true;
+
+					else if (movement.y < 0 && movement.x < 0)
+						leftPos = true;
+				}
+				
+				if (leftPos && rightPos)
+					looped = true;
+
 				// Can never be smaller than -pi
-				float largest{ -4.f };
+				float largest = -4.f;
 				auto selected{ vertices.begin() };
-				bool negatives{ false };
 				for (auto iter{vertices.begin()}; iter != vertices.end(); iter++)
 				{
 					double radians{ std::atan2(iter->position.x - getOrigin().x, iter->position.y- getOrigin().y) };
+				
+					if (looped && radians > 0)
+						radians -= 10.f;
 
 					if (radians > largest)
 					{
